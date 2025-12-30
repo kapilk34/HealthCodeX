@@ -1,20 +1,29 @@
-import pytesseract
-from PIL import Image
-from pdf2image import convert_from_bytes
-import io
+import fitz  # PyMuPDF
 
 def extract_text(file):
-    print(f"Received file: filename={file.filename}, content_type={file.content_type}")
-    content = file.file.read()
-    if not content or len(content) < 10:
-        raise ValueError("Uploaded file is empty or too small to be a valid PDF.")
-    try:
-        images = convert_from_bytes(content)
-    except Exception as e:
-        raise ValueError(f"Could not convert file to images. Is it a valid PDF? Error: {e}")
+    file_bytes = file.file.read()
+    filename = file.filename.lower()
     text = ""
-    for img in images:
-        text += pytesseract.image_to_string(img)
-    if not text.strip():
-        raise ValueError("No text could be extracted from the PDF.")
-    return text
+
+    try:
+        # Handle TEXT-BASED PDFs
+        if filename.endswith(".pdf"):
+            doc = fitz.open(stream=file_bytes, filetype="pdf")
+            for page in doc:
+                text += page.get_text()
+
+        # Handle TXT files
+        elif filename.endswith(".txt"):
+            text = file_bytes.decode("utf-8")
+
+        else:
+            print("Unsupported file type for text-only pipeline")
+
+        if not text.strip():
+            print("⚠️ No text found in document (scanned PDFs not supported)")
+
+        return text
+
+    except Exception as e:
+        print("FILE PARSE ERROR:", e)
+        return ""

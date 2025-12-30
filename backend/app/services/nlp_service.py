@@ -1,13 +1,27 @@
-import spacy
-
-nlp = spacy.load("en_core_web_sm")
-
 def extract_diseases(text: str):
-    doc = nlp(text)
-    diseases = []
+    if not text:
+        return []
 
-    for ent in doc.ents:
-        if ent.label_ in ["DISEASE", "ORG", "NORP"]:
-            diseases.append(ent.text)
+    text = text.lower()
 
-    return list(set(diseases))
+    medical_keywords = [
+        "diabetes",
+        "diabetes mellitus",
+        "type 2 diabetes",
+        "hypertension",
+        "high blood pressure",
+        "asthma",
+        "cancer",
+        "tuberculosis",
+        "thyroid",
+        "covid",
+        "infection"
+    ]
+
+    found = set()
+
+    for keyword in medical_keywords:
+        if keyword in text:
+            found.add(keyword.title())
+
+    return list(found)

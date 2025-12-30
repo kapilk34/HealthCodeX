@@ -1,4 +1,5 @@
-// ResultView.jsx
+import React from "react";
+
 export default function ResultView({ result }) {
   if (!result || result.length === 0) {
     return (

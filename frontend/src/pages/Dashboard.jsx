@@ -1,4 +1,5 @@
 // Dashboard.jsx
+import React from "react";
 import { useState } from "react";
 import UploadReport from "../components/UploadReport";
 import ResultView from "../components/ResultView";
